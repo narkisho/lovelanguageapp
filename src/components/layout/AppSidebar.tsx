@@ -1,4 +1,5 @@
 import { Heart, Calendar, MessageSquare, Beaker, BarChart, Home } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const menuItems = [
-  { title: "Dashboard", icon: Home, url: "/" },
+  { title: "Dashboard", icon: Home, url: "/dashboard" },
   { title: "Date Generator", icon: Calendar, url: "/date-generator" },
   { title: "Chemistry Lab", icon: Beaker, url: "/chemistry-lab" },
   { title: "Conversation Hub", icon: MessageSquare, url: "/conversation-hub" },
@@ -19,6 +20,8 @@ const menuItems = [
 ];
 
 export function AppSidebar() {
+  const location = useLocation();
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -35,10 +38,14 @@ export function AppSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-3">
+                    <Link 
+                      to={item.url} 
+                      className="flex items-center gap-3"
+                      data-active={location.pathname === item.url}
+                    >
                       <item.icon className="w-5 h-5" />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
