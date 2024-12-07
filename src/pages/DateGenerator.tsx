@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar as CalendarIcon, Heart, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -16,9 +17,10 @@ interface DateIdea {
   estimatedCost: string;
 }
 
-const DateGenerator = () => {
+const Progress = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [budget, setBudget] = useState("");
+  const [country, setCountry] = useState("United States");
   const [isLoading, setIsLoading] = useState(false);
   const [dateIdea, setDateIdea] = useState<DateIdea | null>(null);
 
@@ -33,7 +35,8 @@ const DateGenerator = () => {
       const { data, error } = await supabase.functions.invoke('generate-date-idea', {
         body: { 
           date: format(selectedDate, 'MMMM do, yyyy'),
-          budget: parseFloat(budget)
+          budget: parseFloat(budget),
+          country: country
         }
       });
       
@@ -89,6 +92,26 @@ const DateGenerator = () => {
                   onChange={(e) => setBudget(e.target.value)}
                 />
               </div>
+              <div className="flex flex-col space-y-2">
+                <Label>Country</Label>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="United States">United States</SelectItem>
+                    <SelectItem value="Canada">Canada</SelectItem>
+                    <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                    <SelectItem value="Australia">Australia</SelectItem>
+                    <SelectItem value="France">France</SelectItem>
+                    <SelectItem value="Germany">Germany</SelectItem>
+                    <SelectItem value="Japan">Japan</SelectItem>
+                    <SelectItem value="Spain">Spain</SelectItem>
+                    <SelectItem value="Italy">Italy</SelectItem>
+                    <SelectItem value="Mexico">Mexico</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Button 
                 onClick={generateDateIdea}
                 className="w-full"
@@ -137,4 +160,4 @@ const DateGenerator = () => {
   );
 };
 
-export default DateGenerator;
+export default Progress;

@@ -14,8 +14,8 @@ serve(async (req) => {
   }
 
   try {
-    const { date, budget } = await req.json()
-    console.log('Generating date idea for:', { date, budget })
+    const { date, budget, country } = await req.json()
+    console.log('Generating date idea for:', { date, budget, country })
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -29,7 +29,7 @@ serve(async (req) => {
         max_tokens: 1000,
         messages: [{
           role: 'user',
-          content: `Generate a romantic date idea for ${date} with a budget of $${budget}. Return as JSON with format: { title: string, description: string, estimatedCost: string }. Make it creative and specific to the date provided.`
+          content: `Generate a romantic date idea for ${date} with a budget of $${budget} in ${country}. Return as JSON with format: { title: string, description: string, estimatedCost: string }. Make it creative and specific to the location and date provided.`
         }]
       })
     })
