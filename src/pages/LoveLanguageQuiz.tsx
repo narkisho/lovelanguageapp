@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -127,6 +127,27 @@ const LoveLanguageQuiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please login to take the quiz");
+        navigate("/");
+        return;
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Auth error:", error);
+      toast.error("Authentication error");
+      navigate("/");
+    }
+  };
 
   const handleAnswer = (value: string) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion]: value }));
@@ -169,11 +190,15 @@ const LoveLanguageQuiz = () => {
     const { scores, primaryLanguage } = calculateResults();
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please login to submit your results");
+        navigate("/");
+        return;
+      }
 
       const { error } = await supabase.from("love_language_results").insert({
-        user_id: user.id,
+        user_id: session.user.id,
         words_of_affirmation: scores.words_of_affirmation,
         acts_of_service: scores.acts_of_service,
         receiving_gifts: scores.receiving_gifts,
@@ -193,6 +218,16 @@ const LoveLanguageQuiz = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
