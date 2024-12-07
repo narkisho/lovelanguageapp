@@ -5,6 +5,17 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle, Clock, Star, Users } from "lucide-react";
 
+interface PartnerRole {
+  title: string;
+  tasks: string[];
+  preparation: string[];
+}
+
+interface PartnerRoles {
+  partner1: PartnerRole;
+  partner2: PartnerRole;
+}
+
 interface Activity {
   id: string;
   title: string;
@@ -16,18 +27,7 @@ interface Activity {
   completed: boolean | null;
   is_favorite: boolean;
   location: string | null;
-  partner_roles: {
-    partner1: {
-      title: string;
-      tasks: string[];
-      preparation: string[];
-    };
-    partner2: {
-      title: string;
-      tasks: string[];
-      preparation: string[];
-    };
-  } | null;
+  partner_roles: PartnerRoles | null;
 }
 
 export function ActivityList() {
@@ -50,7 +50,23 @@ export function ActivityList() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setActivities(data || []);
+      
+      // Cast the data to ensure it matches our Activity interface
+      const typedActivities: Activity[] = data?.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        stage: item.stage,
+        duration: item.duration,
+        difficulty_level: item.difficulty_level,
+        completed: item.completed,
+        is_favorite: item.is_favorite,
+        location: item.location,
+        partner_roles: item.partner_roles as PartnerRoles | null
+      })) || [];
+
+      setActivities(typedActivities);
     } catch (error) {
       console.error('Error fetching activities:', error);
       toast.error("Failed to load activities");
