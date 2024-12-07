@@ -17,7 +17,7 @@ interface DateIdea {
   estimatedCost: string;
 }
 
-const Progress = () => {
+const DateGenerator = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [budget, setBudget] = useState("");
   const [country, setCountry] = useState("United States");
@@ -98,7 +98,7 @@ const Progress = () => {
                   <SelectTrigger>
                     <SelectValue placeholder="Select a country" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-[300px]">
                     <SelectItem value="United States">United States</SelectItem>
                     <SelectItem value="Canada">Canada</SelectItem>
                     <SelectItem value="United Kingdom">United Kingdom</SelectItem>
@@ -109,6 +109,37 @@ const Progress = () => {
                     <SelectItem value="Spain">Spain</SelectItem>
                     <SelectItem value="Italy">Italy</SelectItem>
                     <SelectItem value="Mexico">Mexico</SelectItem>
+                    <SelectItem value="Brazil">Brazil</SelectItem>
+                    <SelectItem value="Argentina">Argentina</SelectItem>
+                    <SelectItem value="China">China</SelectItem>
+                    <SelectItem value="India">India</SelectItem>
+                    <SelectItem value="Russia">Russia</SelectItem>
+                    <SelectItem value="South Korea">South Korea</SelectItem>
+                    <SelectItem value="Singapore">Singapore</SelectItem>
+                    <SelectItem value="Thailand">Thailand</SelectItem>
+                    <SelectItem value="Vietnam">Vietnam</SelectItem>
+                    <SelectItem value="Indonesia">Indonesia</SelectItem>
+                    <SelectItem value="Malaysia">Malaysia</SelectItem>
+                    <SelectItem value="Philippines">Philippines</SelectItem>
+                    <SelectItem value="New Zealand">New Zealand</SelectItem>
+                    <SelectItem value="South Africa">South Africa</SelectItem>
+                    <SelectItem value="Egypt">Egypt</SelectItem>
+                    <SelectItem value="Morocco">Morocco</SelectItem>
+                    <SelectItem value="Kenya">Kenya</SelectItem>
+                    <SelectItem value="Nigeria">Nigeria</SelectItem>
+                    <SelectItem value="UAE">United Arab Emirates</SelectItem>
+                    <SelectItem value="Saudi Arabia">Saudi Arabia</SelectItem>
+                    <SelectItem value="Turkey">Turkey</SelectItem>
+                    <SelectItem value="Greece">Greece</SelectItem>
+                    <SelectItem value="Sweden">Sweden</SelectItem>
+                    <SelectItem value="Norway">Norway</SelectItem>
+                    <SelectItem value="Denmark">Denmark</SelectItem>
+                    <SelectItem value="Netherlands">Netherlands</SelectItem>
+                    <SelectItem value="Belgium">Belgium</SelectItem>
+                    <SelectItem value="Switzerland">Switzerland</SelectItem>
+                    <SelectItem value="Austria">Austria</SelectItem>
+                    <SelectItem value="Portugal">Portugal</SelectItem>
+                    <SelectItem value="Ireland">Ireland</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -160,4 +191,4 @@ const Progress = () => {
   );
 };
 
-export default Progress;
+export default DateGenerator;
