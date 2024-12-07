@@ -9,13 +9,18 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { preferences } = await req.json()
-    console.log('Generating activity with preferences:', preferences)
+    console.log('Received preferences:', preferences)
+
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('ANTHROPIC_API_KEY is not set')
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -41,9 +46,7 @@ serve(async (req) => {
               stage: string,
               duration: number,
               difficulty_level: number (1-5),
-              materials: string[],
-              instructions: string[],
-              reflection_questions: string[]
+              location: string
             }
             
             Make it engaging, appropriate for the relationship level, and focused on building emotional connection.`
@@ -51,17 +54,29 @@ serve(async (req) => {
       })
     })
 
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error('Anthropic API error:', errorData)
+      throw new Error(`Anthropic API error: ${response.status}`)
+    }
+
     const data = await response.json()
+    console.log('Anthropic response:', data)
+
     const activity = JSON.parse(data.content[0].text)
+    console.log('Parsed activity:', activity)
 
     return new Response(JSON.stringify(activity), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error in generate-closer-activity:', error)
     return new Response(
-      JSON.stringify({ error: 'Failed to generate activity' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ error: error.message || 'Failed to generate activity' }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 500 
+      }
     )
   }
 })
