@@ -12,15 +12,19 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { type, answers } = await req.json()
-    console.log('Generating activity with answers:', answers)
+    console.log('Generating activity with preferences:', answers)
 
-    // Use the answers to create a more personalized prompt
+    if (!Deno.env.get('ANTHROPIC_API_KEY')) {
+      throw new Error('ANTHROPIC_API_KEY is not set')
+    }
+
     const relationshipStage = answers?.relationshipStage || 'any'
     const intimacyLevel = answers?.intimacyLevel || 'moderate'
     const activityDuration = answers?.duration || '30-60 minutes'
@@ -38,8 +42,8 @@ serve(async (req) => {
           - Location: ${location}
           
           Format as JSON with fields: 
-          - title (string)
-          - description (string)
+          - title (string, max 100 chars)
+          - description (string, max 500 chars)
           - category (one of: emotional, physical, communication, sensory, creative)
           - stage (one of: discovery, deepening, commitment)
           
@@ -47,8 +51,10 @@ serve(async (req) => {
       }]
     });
 
+    console.log('AI Response:', message.content[0].text);
+
     const generatedContent = JSON.parse(message.content[0].text);
-    console.log('Generated activity:', generatedContent)
+    console.log('Parsed activity:', generatedContent);
 
     return new Response(
       JSON.stringify(generatedContent),
