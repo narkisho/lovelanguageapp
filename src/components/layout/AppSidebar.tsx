@@ -13,6 +13,7 @@ import {
   Sparkles,
   Target,
   Scale,
+  Beaker,
 } from "lucide-react";
 
 export function AppSidebar() {
@@ -51,6 +52,14 @@ export function AppSidebar() {
               >
                 <FlaskConical className="mr-2 h-4 w-4" />
                 Chemistry Lab
+              </Button>
+              <Button
+                variant={location.pathname === "/closer-kit" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/closer-kit")}
+              >
+                <Beaker className="mr-2 h-4 w-4" />
+                CloserKit
               </Button>
               <Button
                 variant={location.pathname === "/conversation-hub" ? "secondary" : "ghost"}

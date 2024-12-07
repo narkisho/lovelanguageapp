@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import DateGenerator from "./pages/DateGenerator";
 import ChemistryLab from "./pages/ChemistryLab";
+import CloserKit from "./pages/CloserKit";
 import ConversationHub from "./pages/ConversationHub";
 import Progress from "./pages/Progress";
 import ResetPassword from "./pages/ResetPassword";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/date-generator" element={<DateGenerator />} />
           <Route path="/chemistry-lab" element={<ChemistryLab />} />
+          <Route path="/closer-kit" element={<CloserKit />} />
           <Route path="/conversation-hub" element={<ConversationHub />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/reset-password" element={<ResetPassword />} />
