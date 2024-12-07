@@ -5,14 +5,14 @@ import {
   HeartHandshake,
   Trophy,
   Heart,
-  Languages
+  Languages,
+  Target
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -26,6 +26,7 @@ const menuItems = [
   { title: "Conversation Hub", icon: HeartHandshake, url: "/conversation-hub" },
   { title: "Progress", icon: Trophy, url: "/progress" },
   { title: "Love Language Quiz", icon: Languages, url: "/love-language-quiz" },
+  { title: "VisionQuest", icon: Target, url: "/vision-quest" },
 ];
 
 export function AppSidebar() {

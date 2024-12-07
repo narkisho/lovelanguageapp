@@ -12,6 +12,7 @@ import Progress from "./pages/Progress";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import LoveLanguageQuiz from "./pages/LoveLanguageQuiz";
+import VisionQuest from "./pages/VisionQuest";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/update-password" element={<UpdatePassword />} />
           <Route path="/love-language-quiz" element={<LoveLanguageQuiz />} />
+          <Route path="/vision-quest" element={<VisionQuest />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
