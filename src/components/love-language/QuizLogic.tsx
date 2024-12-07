@@ -33,6 +33,13 @@ export const QuizLogic = ({ questions }: { questions: any[] }) => {
     }
   };
 
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setAnswers({});
+    setShowResults(false);
+    setQuizResults(null);
+  };
+
   const calculateResults = () => {
     const scores: LoveLanguageScores = {
       words_of_affirmation: 0,
@@ -60,7 +67,11 @@ export const QuizLogic = ({ questions }: { questions: any[] }) => {
   return (
     <>
       {showResults && quizResults ? (
-        <QuizResult scores={quizResults.scores} primaryLanguage={quizResults.primaryLanguage} />
+        <QuizResult 
+          scores={quizResults.scores} 
+          primaryLanguage={quizResults.primaryLanguage}
+          onRetake={resetQuiz}
+        />
       ) : (
         <Card className="glass-card max-w-3xl mx-auto">
           <CardHeader>

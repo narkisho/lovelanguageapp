@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart, RefreshCw } from "lucide-react";
 
 interface QuizResultProps {
   scores: {
@@ -10,6 +11,7 @@ interface QuizResultProps {
     physical_touch: number;
   };
   primaryLanguage: string;
+  onRetake: () => void;
 }
 
 const loveLanguageInfo = {
@@ -65,7 +67,7 @@ const loveLanguageInfo = {
   }
 };
 
-export const QuizResult = ({ scores, primaryLanguage }: QuizResultProps) => {
+export const QuizResult = ({ scores, primaryLanguage, onRetake }: QuizResultProps) => {
   const formatLanguage = (str: string) => 
     str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
@@ -91,6 +93,17 @@ export const QuizResult = ({ scores, primaryLanguage }: QuizResultProps) => {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <Button
+            onClick={onRetake}
+            variant="outline"
+            className="gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retake Quiz
+          </Button>
         </div>
 
         <div className="mt-8 space-y-6">
