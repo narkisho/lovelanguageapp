@@ -46,7 +46,7 @@ const Dashboard = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed in dashboard:", event, session);
-      if (event === "SIGNED_OUT" || !session) {
+      if (event === 'SIGNED_OUT' || !session) {
         navigate("/");
       }
     });
@@ -58,17 +58,45 @@ const Dashboard = () => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      // First check if we have a session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Error checking session:", sessionError);
+        navigate("/");
+        return;
+      }
+
+      if (!session) {
+        console.log("No active session found, redirecting to home");
+        navigate("/");
+        return;
+      }
+
+      // If we have a session, attempt to sign out
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Error during sign out:", error);
+        if (error.message.includes("session_not_found")) {
+          // If session not found, just redirect to home
+          navigate("/");
+          return;
+        }
+        throw error;
+      }
+
       toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
+        title: "Signed out successfully",
+        description: "You have been logged out.",
       });
+      
       navigate("/");
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Unexpected error during sign out:", error);
       toast({
         title: "Error",
-        description: "Failed to sign out. Please try again.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     }
