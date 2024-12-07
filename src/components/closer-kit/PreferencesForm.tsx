@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   relationship_level: z.string({
@@ -39,11 +40,16 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
   });
 
   const onSubmit = async (data: PreferencesFormData) => {
+    console.log("Submitting preferences:", data);
     setIsLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!user) {
+        toast.error("Please sign in to save preferences");
+        return;
+      }
 
+      console.log("Saving preferences for user:", user.id);
       const { error } = await supabase
         .from('closer_kit_preferences')
         .upsert({
@@ -52,14 +58,20 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
           activity_duration: parseInt(data.activity_duration),
           location: data.location,
           updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
       toast.success("Preferences saved successfully!");
       onSaved?.();
     } catch (error) {
       console.error('Error saving preferences:', error);
-      toast.error("Failed to save preferences");
+      toast.error("Failed to save preferences. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -139,8 +151,15 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : "Save Preferences"}
+        <Button type="submit" disabled={isLoading} className="w-full">
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Save Preferences"
+          )}
         </Button>
       </form>
     </Form>
