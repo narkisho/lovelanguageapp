@@ -1,13 +1,14 @@
+import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { Label } from "@/components/ui/label";
+import { Calendar as CalendarIcon, Heart, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DateIdea {
   title: string;
@@ -16,47 +17,35 @@ interface DateIdea {
 }
 
 const DateGenerator = () => {
-  const [date, setDate] = useState<Date>();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [budget, setBudget] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [dateIdea, setDateIdea] = useState<DateIdea | null>(null);
-  const { toast } = useToast();
 
-  const handleGenerateDate = async () => {
-    if (!date || !budget) {
-      toast({
-        title: "Missing Information",
-        description: "Please select a date and enter a budget.",
-        variant: "destructive",
-      });
+  const generateDateIdea = async () => {
+    if (!selectedDate || !budget) {
+      toast.error("Please select a date and budget");
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-date-idea', {
-        body: {
-          date: format(date, 'MMMM do, yyyy'),
-          budget: budget,
-        },
+        body: { 
+          date: format(selectedDate, 'MMMM do, yyyy'),
+          budget: parseFloat(budget)
+        }
       });
-
+      
       if (error) throw error;
-
+      
       setDateIdea(data);
-      toast({
-        title: "Date Idea Generated",
-        description: "Check out your personalized date suggestion below!",
-      });
+      toast.success("New date idea generated!");
     } catch (error) {
       console.error('Error generating date idea:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate date idea. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to generate date idea");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -66,32 +55,33 @@ const DateGenerator = () => {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-gradient">Date Generator</h1>
           <p className="text-spark-text-light text-lg max-w-2xl mx-auto">
-            Let us help you plan the perfect date based on your preferences.
+            Get personalized date ideas based on your preferences and budget.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="glass-card hover-card">
             <CardHeader>
-              <CardTitle>Select Date</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarIcon className="w-5 h-5" />
+                Select Date & Budget
+              </CardTitle>
+              <CardDescription>
+                Choose when you'd like to have your date and set your budget
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border"
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card hover-card">
-            <CardHeader>
-              <CardTitle>Preferences</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Budget</label>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col space-y-2">
+                <Label>Select Date</Label>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="rounded-md border"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label>Budget ($)</Label>
                 <Input
                   type="number"
                   placeholder="Enter your budget"
@@ -100,33 +90,47 @@ const DateGenerator = () => {
                 />
               </div>
               <Button 
+                onClick={generateDateIdea}
                 className="w-full"
-                onClick={handleGenerateDate}
-                disabled={!date || !budget || loading}
+                disabled={isLoading}
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
+                {isLoading ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
                 ) : (
-                  'Generate Date Idea'
+                  <>Generate Date Idea</>
                 )}
               </Button>
             </CardContent>
           </Card>
 
-          {dateIdea && (
-            <Card className="glass-card hover-card md:col-span-2">
-              <CardHeader>
-                <CardTitle>{dateIdea.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-lg">{dateIdea.description}</p>
-                <p className="font-semibold">Estimated Cost: {dateIdea.estimatedCost}</p>
-              </CardContent>
-            </Card>
-          )}
+          <Card className="glass-card hover-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="w-5 h-5" />
+                Your Date Idea
+              </CardTitle>
+              <CardDescription>
+                A personalized date suggestion just for you
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {dateIdea ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-lg bg-white/10 space-y-2">
+                    <h3 className="font-semibold">{dateIdea.title}</h3>
+                    <p className="text-sm text-spark-text-light">{dateIdea.description}</p>
+                    <p className="text-xs text-spark-text-light mt-2">
+                      Estimated Cost: {dateIdea.estimatedCost}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-spark-text-light py-4">
+                  Generate a date idea to see your personalized suggestion here.
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </MainLayout>

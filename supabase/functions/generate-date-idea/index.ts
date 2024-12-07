@@ -1,63 +1,58 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
+const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
-
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { date, budget } = await req.json()
-    
     console.log('Generating date idea for:', { date, budget })
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a creative date planner. Generate a romantic date idea based on the given date and budget. Include a title, description, and estimated cost. Format the response as a JSON object.'
-          },
-          {
-            role: 'user',
-            content: `Generate a romantic date idea for ${date} with a budget of $${budget}. The response should be a valid JSON object with title, description, and estimatedCost fields.`
-          }
-        ],
-      }),
+        model: 'claude-3-sonnet-20240229',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Generate a romantic date idea for ${date} with a budget of $${budget}. Return as JSON with format: { title: string, description: string, estimatedCost: string }. Make it creative and specific to the date provided.`
+        }]
+      })
     })
 
-    const data = await response.json()
-    console.log('OpenAI response:', data)
-
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from OpenAI')
+    if (!response.ok) {
+      throw new Error(`Anthropic API error: ${response.statusText}`)
     }
 
-    const dateIdea = JSON.parse(data.choices[0].message.content)
+    const data = await response.json()
+    console.log('Claude response:', data)
+    
+    // Extract JSON from the response
+    const content = JSON.parse(data.content[0].text)
+    console.log('Parsed date idea:', content)
 
-    return new Response(
-      JSON.stringify(dateIdea),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify(content), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Error generating date idea:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 },
+      JSON.stringify({ error: error.message || 'Failed to generate date idea' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
 })
