@@ -19,9 +19,9 @@ serve(async (req) => {
 
     let prompt = ''
     if (type === 'topic') {
-      prompt = 'Generate a conversation topic for couples with 3 discussion questions. Return as JSON with format: { title: string, questions: string[] }. Make it engaging and meaningful for relationship growth.'
+      prompt = 'Generate a conversation topic for couples with 3 discussion questions. Return as JSON with format: { title: string, questions: string[] }. Make it engaging and meaningful for relationship growth. Return ONLY the JSON, no markdown.'
     } else if (type === 'exercise') {
-      prompt = 'Generate a deep connection exercise for couples. Return as JSON with format: { title: string, description: string, duration: string }. Make it meaningful and interactive.'
+      prompt = 'Generate a deep connection exercise for couples. Return as JSON with format: { title: string, description: string, duration: string }. Make it meaningful and interactive. Return ONLY the JSON, no markdown.'
     } else {
       throw new Error('Invalid content type')
     }
@@ -51,12 +51,27 @@ serve(async (req) => {
     const data = await response.json()
     console.log('Generated content:', data)
     
-    const content = JSON.parse(data.content[0].text)
-    console.log('Parsed content:', content)
-
-    return new Response(JSON.stringify(content), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    // Extract JSON from potential markdown formatting
+    let contentText = data.content[0].text
+    // Remove markdown code blocks if present
+    contentText = contentText.replace(/```json\n|\n```/g, '')
+    // Remove any remaining markdown formatting
+    contentText = contentText.trim()
+    
+    console.log('Cleaned content text:', contentText)
+    
+    try {
+      const content = JSON.parse(contentText)
+      console.log('Parsed content:', content)
+      
+      return new Response(JSON.stringify(content), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    } catch (parseError) {
+      console.error('JSON parsing error:', parseError)
+      console.error('Content that failed to parse:', contentText)
+      throw new Error('Failed to parse AI response as JSON')
+    }
   } catch (error) {
     console.error('Error:', error)
     return new Response(
