@@ -39,8 +39,10 @@ export type Database = {
           completed: boolean | null
           created_at: string
           description: string
+          difficulty_level: number
           duration: number | null
           id: string
+          is_favorite: boolean
           location: string | null
           reflection_notes: string | null
           stage: string
@@ -53,8 +55,10 @@ export type Database = {
           completed?: boolean | null
           created_at?: string
           description: string
+          difficulty_level?: number
           duration?: number | null
           id?: string
+          is_favorite?: boolean
           location?: string | null
           reflection_notes?: string | null
           stage: string
@@ -67,8 +71,10 @@ export type Database = {
           completed?: boolean | null
           created_at?: string
           description?: string
+          difficulty_level?: number
           duration?: number | null
           id?: string
+          is_favorite?: boolean
           location?: string | null
           reflection_notes?: string | null
           stage?: string
