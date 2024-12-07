@@ -37,20 +37,20 @@ export function AppSidebar() {
             </Button>
             <SidebarContent>
               <Button
-                variant={location.pathname === "/chemistry-lab" ? "secondary" : "ghost"}
-                className="w-full justify-start"
-                onClick={() => navigate("/chemistry-lab")}
-              >
-                <FlaskConical className="mr-2 h-4 w-4" />
-                Chemistry Lab
-              </Button>
-              <Button
                 variant={location.pathname === "/date-generator" ? "secondary" : "ghost"}
                 className="w-full justify-start"
                 onClick={() => navigate("/date-generator")}
               >
                 <CalendarDays className="mr-2 h-4 w-4" />
                 Date Generator
+              </Button>
+              <Button
+                variant={location.pathname === "/chemistry-lab" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/chemistry-lab")}
+              >
+                <FlaskConical className="mr-2 h-4 w-4" />
+                Chemistry Lab
               </Button>
               <Button
                 variant={location.pathname === "/conversation-hub" ? "secondary" : "ghost"}

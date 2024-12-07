@@ -1,4 +1,3 @@
-import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,42 +15,30 @@ import LoveLanguageQuiz from "./pages/LoveLanguageQuiz";
 import VisionQuest from "./pages/VisionQuest";
 import ValiaQuiz from "./pages/ValiaQuiz";
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
-const App = () => {
-  return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/date-generator" element={<DateGenerator />} />
-              <Route path="/chemistry-lab" element={<ChemistryLab />} />
-              <Route path="/conversation-hub" element={<ConversationHub />} />
-              <Route path="/progress" element={<Progress />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/update-password" element={<UpdatePassword />} />
-              <Route path="/love-language-quiz" element={<LoveLanguageQuiz />} />
-              <Route path="/vision-quest" element={<VisionQuest />} />
-              <Route path="/valia-quiz" element={<ValiaQuiz />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
-  );
-};
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/date-generator" element={<DateGenerator />} />
+          <Route path="/chemistry-lab" element={<ChemistryLab />} />
+          <Route path="/conversation-hub" element={<ConversationHub />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/update-password" element={<UpdatePassword />} />
+          <Route path="/love-language-quiz" element={<LoveLanguageQuiz />} />
+          <Route path="/vision-quest" element={<VisionQuest />} />
+          <Route path="/valia-quiz" element={<ValiaQuiz />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
