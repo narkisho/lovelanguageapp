@@ -33,6 +33,7 @@ const ConversationHub = () => {
       });
       
       if (error) throw error;
+      console.log('Topic generation response:', data);
       setCurrentTopic(data);
       toast({
         title: "New Topic Generated",
@@ -58,6 +59,7 @@ const ConversationHub = () => {
       });
       
       if (error) throw error;
+      console.log('Exercise generation response:', data);
       setCurrentExercise(data);
       toast({
         title: "New Exercise Generated",
