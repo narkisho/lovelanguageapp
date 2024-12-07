@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/card";
 import { Calendar, MessageSquare, Beaker, BarChart } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const features = [
   {
@@ -36,14 +37,34 @@ const features = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (event === "SIGNED_IN" && session) {
+        toast({
+          title: "Welcome!",
+          description: "Successfully signed in.",
+        });
         navigate("/dashboard");
       }
     });
-  }, [navigate]);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-spark-lavender via-background to-spark-rose">
