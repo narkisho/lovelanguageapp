@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LogOut, Send, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -71,6 +72,28 @@ const Dashboard = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const formatAnswer = (answer: string) => {
+    // Check if the answer contains numbers followed by periods (like "1.", "2.")
+    if (/\d+\./.test(answer)) {
+      // Split by newlines and wrap each point in a div
+      return answer.split('\n').map((line, index) => (
+        <div key={index} className="py-1">{line}</div>
+      ));
+    }
+    
+    // If no numbered points, check for bullet points or dashes
+    if (answer.includes('•') || answer.includes('-')) {
+      return answer.split('\n').map((line, index) => (
+        <div key={index} className="py-1 pl-4">{line}</div>
+      ));
+    }
+    
+    // If no special formatting needed, add paragraph spacing
+    return answer.split('\n').map((paragraph, index) => (
+      <p key={index} className="py-2">{paragraph}</p>
+    ));
   };
 
   const handleAskQuestion = async () => {
@@ -167,14 +190,18 @@ const Dashboard = () => {
             </div>
 
             <div className="space-y-4 mt-8">
-              {conversations.map((conv) => (
-                <Card key={conv.id} className="bg-white/5">
-                  <CardContent className="pt-6">
-                    <p className="font-semibold text-spark-text mb-2">Q: {conv.question}</p>
-                    <p className="text-spark-text-light">A: {conv.answer}</p>
-                  </CardContent>
-                </Card>
-              ))}
+              <Accordion type="single" collapsible className="w-full">
+                {conversations.map((conv, index) => (
+                  <AccordionItem key={conv.id} value={`item-${index}`}>
+                    <AccordionTrigger className="text-spark-text hover:no-underline">
+                      <span className="text-left">{conv.question}</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-spark-text-light bg-white/5 p-4 rounded-lg">
+                      {formatAnswer(conv.answer)}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </CardContent>
         </Card>
