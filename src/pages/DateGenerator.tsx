@@ -5,18 +5,59 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { Loader2 } from "lucide-react";
+
+interface DateIdea {
+  title: string;
+  description: string;
+  estimatedCost: string;
+}
 
 const DateGenerator = () => {
   const [date, setDate] = useState<Date>();
   const [budget, setBudget] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [dateIdea, setDateIdea] = useState<DateIdea | null>(null);
   const { toast } = useToast();
 
-  const handleGenerateDate = () => {
-    toast({
-      title: "Date Idea Generated",
-      description: "Your personalized date suggestion is being prepared.",
-    });
-    // TODO: Implement date generation logic with Supabase
+  const handleGenerateDate = async () => {
+    if (!date || !budget) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a date and enter a budget.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-date-idea', {
+        body: {
+          date: format(date, 'MMMM do, yyyy'),
+          budget: budget,
+        },
+      });
+
+      if (error) throw error;
+
+      setDateIdea(data);
+      toast({
+        title: "Date Idea Generated",
+        description: "Check out your personalized date suggestion below!",
+      });
+    } catch (error) {
+      console.error('Error generating date idea:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate date idea. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,12 +102,31 @@ const DateGenerator = () => {
               <Button 
                 className="w-full"
                 onClick={handleGenerateDate}
-                disabled={!date || !budget}
+                disabled={!date || !budget || loading}
               >
-                Generate Date Idea
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  'Generate Date Idea'
+                )}
               </Button>
             </CardContent>
           </Card>
+
+          {dateIdea && (
+            <Card className="glass-card hover-card md:col-span-2">
+              <CardHeader>
+                <CardTitle>{dateIdea.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-lg">{dateIdea.description}</p>
+                <p className="font-semibold">Estimated Cost: {dateIdea.estimatedCost}</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </MainLayout>
