@@ -1,65 +1,78 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, Heart } from "lucide-react";
+import { MessageSquare, Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { supabase } from "@/integrations/supabase/client";
 
-const dailyTopics = [
-  {
-    title: "Childhood Dreams",
-    questions: [
-      "What was your biggest dream as a child?",
-      "Which of those dreams have you achieved?",
-      "How can we support each other's dreams now?"
-    ]
-  },
-  {
-    title: "Future Plans",
-    questions: [
-      "Where do you see us in 5 years?",
-      "What's one adventure you'd like us to have together?",
-      "What goals should we set as a couple?"
-    ]
-  },
-  {
-    title: "Love Languages",
-    questions: [
-      "How do you prefer to receive affection?",
-      "What makes you feel most appreciated?",
-      "How can I better show you love?"
-    ]
-  }
-];
+interface Topic {
+  title: string;
+  questions: string[];
+}
 
-const deepConnectionExercises = [
-  {
-    title: "Eye Contact Exercise",
-    description: "Sit facing each other and maintain eye contact for 4 minutes. Share how it made you feel afterward.",
-    duration: "5-10 minutes"
-  },
-  {
-    title: "Gratitude Exchange",
-    description: "Take turns sharing three specific things you appreciate about each other from the past week.",
-    duration: "10-15 minutes"
-  },
-  {
-    title: "Memory Lane",
-    description: "Share your favorite memories together and discuss why they're meaningful to you.",
-    duration: "15-20 minutes"
-  }
-];
+interface Exercise {
+  title: string;
+  description: string;
+  duration: string;
+}
 
 const ConversationHub = () => {
   const { toast } = useToast();
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [isLoadingTopic, setIsLoadingTopic] = useState(false);
+  const [isLoadingExercise, setIsLoadingExercise] = useState(false);
+  const [currentTopic, setCurrentTopic] = useState<Topic | null>(null);
+  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
 
-  const handleStartExercise = (exercise: string) => {
-    toast({
-      title: "Exercise Started",
-      description: `Starting: ${exercise}. Find a quiet space where you won't be interrupted.`,
-    });
+  const generateNewTopic = async () => {
+    setIsLoadingTopic(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-conversation-content', {
+        body: { type: 'topic' }
+      });
+      
+      if (error) throw error;
+      setCurrentTopic(data);
+      toast({
+        title: "New Topic Generated",
+        description: "Start exploring this conversation topic together!",
+      });
+    } catch (error) {
+      console.error('Error generating topic:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate new topic",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingTopic(false);
+    }
+  };
+
+  const generateNewExercise = async () => {
+    setIsLoadingExercise(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-conversation-content', {
+        body: { type: 'exercise' }
+      });
+      
+      if (error) throw error;
+      setCurrentExercise(data);
+      toast({
+        title: "New Exercise Generated",
+        description: "Try this connection exercise together!",
+      });
+    } catch (error) {
+      console.error('Error generating exercise:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate new exercise",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingExercise(false);
+    }
   };
 
   return (
@@ -74,58 +87,81 @@ const ConversationHub = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="glass-card hover-card">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" />
                 Daily Topics
               </CardTitle>
+              <Button
+                variant="outline"
+                onClick={generateNewTopic}
+                disabled={isLoadingTopic}
+              >
+                {isLoadingTopic ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                ) : (
+                  'Generate New Topic'
+                )}
+              </Button>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" collapsible>
-                {dailyTopics.map((topic, index) => (
-                  <AccordionItem key={index} value={`topic-${index}`}>
-                    <AccordionTrigger>{topic.title}</AccordionTrigger>
+              {currentTopic ? (
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="topic">
+                    <AccordionTrigger>{currentTopic.title}</AccordionTrigger>
                     <AccordionContent>
                       <ul className="space-y-3">
-                        {topic.questions.map((question, qIndex) => (
-                          <li key={qIndex} className="text-spark-text-light">
+                        {currentTopic.questions.map((question, index) => (
+                          <li key={index} className="text-spark-text-light">
                             {question}
                           </li>
                         ))}
                       </ul>
                     </AccordionContent>
                   </AccordionItem>
-                ))}
-              </Accordion>
+                </Accordion>
+              ) : (
+                <p className="text-center text-spark-text-light py-4">
+                  Click the button above to generate a new conversation topic.
+                </p>
+              )}
             </CardContent>
           </Card>
 
           <Card className="glass-card hover-card">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Heart className="w-5 h-5" />
                 Deep Connection
               </CardTitle>
+              <Button
+                variant="outline"
+                onClick={generateNewExercise}
+                disabled={isLoadingExercise}
+              >
+                {isLoadingExercise ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                ) : (
+                  'Generate New Exercise'
+                )}
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {deepConnectionExercises.map((exercise, index) => (
-                  <div key={index} className="p-4 rounded-lg bg-white/10 space-y-2">
-                    <h3 className="font-semibold">{exercise.title}</h3>
-                    <p className="text-sm text-spark-text-light">{exercise.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-spark-text-light">Duration: {exercise.duration}</span>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleStartExercise(exercise.title)}
-                      >
-                        Start Exercise
-                      </Button>
-                    </div>
+              {currentExercise ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-lg bg-white/10 space-y-2">
+                    <h3 className="font-semibold">{currentExercise.title}</h3>
+                    <p className="text-sm text-spark-text-light">{currentExercise.description}</p>
+                    <p className="text-xs text-spark-text-light mt-2">
+                      Duration: {currentExercise.duration}
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <p className="text-center text-spark-text-light py-4">
+                  Click the button above to generate a new connection exercise.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
