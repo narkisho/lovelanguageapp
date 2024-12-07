@@ -19,6 +19,9 @@ const formSchema = z.object({
   location: z.string({
     required_error: "Please select a location preference",
   }),
+  level_of_romance: z.string({
+    required_error: "Please select a romance level",
+  }),
 });
 
 type PreferencesFormData = z.infer<typeof formSchema>;
@@ -36,6 +39,7 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
       relationship_level: "",
       activity_duration: "",
       location: "",
+      level_of_romance: "",
     },
   });
 
@@ -57,6 +61,7 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
           relationship_level: data.relationship_level,
           activity_duration: parseInt(data.activity_duration),
           location: data.location,
+          level_of_romance: data.level_of_romance,
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
@@ -144,6 +149,29 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
                   <SelectItem value="indoor">Indoor Only</SelectItem>
                   <SelectItem value="outdoor">Outdoor Only</SelectItem>
                   <SelectItem value="both">Both Indoor & Outdoor</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="level_of_romance"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Level of Romance</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select romance level" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="low">Subtle & Sweet</SelectItem>
+                  <SelectItem value="moderate">Moderately Romantic</SelectItem>
+                  <SelectItem value="high">Very Romantic</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

@@ -92,6 +92,7 @@ export type Database = {
           activity_duration: number
           created_at: string
           id: string
+          level_of_romance: string
           location: string
           relationship_level: string
           updated_at: string
@@ -101,6 +102,7 @@ export type Database = {
           activity_duration: number
           created_at?: string
           id?: string
+          level_of_romance?: string
           location: string
           relationship_level: string
           updated_at?: string
@@ -110,6 +112,7 @@ export type Database = {
           activity_duration?: number
           created_at?: string
           id?: string
+          level_of_romance?: string
           location?: string
           relationship_level?: string
           updated_at?: string

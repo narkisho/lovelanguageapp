@@ -37,6 +37,7 @@ serve(async (req) => {
             - Relationship Level: ${preferences.relationship_level}
             - Duration: ${preferences.activity_duration} minutes
             - Location: ${preferences.location}
+            - Romance Level: ${preferences.level_of_romance}
             
             Return as JSON with format: {
               title: string,
@@ -60,7 +61,7 @@ serve(async (req) => {
               }
             }
             
-            Make it engaging, appropriate for the relationship level, and focused on building emotional connection. Include specific roles and tasks for each partner.`
+            Make it engaging, appropriate for the relationship level and romance level, and focused on building emotional connection. Include specific roles and tasks for each partner.`
         }]
       })
     })
