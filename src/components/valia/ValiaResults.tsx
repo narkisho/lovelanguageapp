@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Json } from "@/integrations/supabase/types";
 
 interface ValiaResult {
   core_values: string[];
@@ -34,7 +35,17 @@ export function ValiaResults() {
           .single();
 
         if (error) throw error;
-        setResults(data);
+        
+        // Convert Json types to string arrays
+        const formattedResults: ValiaResult = {
+          core_values: (data.core_values as Json[]).map(String),
+          must_haves: (data.must_haves as Json[]).map(String),
+          nice_to_haves: (data.nice_to_haves as Json[]).map(String),
+          deal_breakers: (data.deal_breakers as Json[]).map(String),
+          created_at: data.created_at
+        };
+        
+        setResults(formattedResults);
       } catch (error) {
         console.error('Error fetching results:', error);
         toast({
