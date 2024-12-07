@@ -9,7 +9,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -34,7 +33,7 @@ serve(async (req) => {
         max_tokens: 1000,
         messages: [{
           role: 'user',
-          content: `Generate a relationship-building activity based on these preferences:
+          content: `Generate a detailed relationship-building activity based on these preferences:
             - Relationship Level: ${preferences.relationship_level}
             - Duration: ${preferences.activity_duration} minutes
             - Location: ${preferences.location}
@@ -46,10 +45,22 @@ serve(async (req) => {
               stage: string,
               duration: number,
               difficulty_level: number (1-5),
-              location: string
+              location: string,
+              partner_roles: {
+                partner1: {
+                  title: string,
+                  tasks: string[],
+                  preparation: string[]
+                },
+                partner2: {
+                  title: string,
+                  tasks: string[],
+                  preparation: string[]
+                }
+              }
             }
             
-            Make it engaging, appropriate for the relationship level, and focused on building emotional connection.`
+            Make it engaging, appropriate for the relationship level, and focused on building emotional connection. Include specific roles and tasks for each partner.`
         }]
       })
     })
@@ -66,7 +77,16 @@ serve(async (req) => {
     const activity = JSON.parse(data.content[0].text)
     console.log('Parsed activity:', activity)
 
-    return new Response(JSON.stringify(activity), {
+    // Format the description to include partner roles
+    const formattedDescription = `${activity.description}\n\nPartner 1 Role - ${activity.partner_roles.partner1.title}:\n${activity.partner_roles.partner1.tasks.join('\n')}\n\nPartner 2 Role - ${activity.partner_roles.partner2.title}:\n${activity.partner_roles.partner2.tasks.join('\n')}`
+
+    // Combine the activity data with formatted description
+    const finalActivity = {
+      ...activity,
+      description: formattedDescription
+    }
+
+    return new Response(JSON.stringify(finalActivity), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {

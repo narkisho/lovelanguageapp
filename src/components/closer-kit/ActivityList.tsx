@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, Clock, Star } from "lucide-react";
+import { CheckCircle, Clock, Star, Users } from "lucide-react";
 
 interface Activity {
   id: string;
@@ -99,7 +99,10 @@ export function ActivityList() {
         <Card key={activity.id} className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>{activity.title}</span>
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                <span>{activity.title}</span>
+              </div>
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
@@ -127,9 +130,15 @@ export function ActivityList() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <p className="text-spark-text-light">{activity.description}</p>
-              <div className="flex items-center gap-4 text-sm text-spark-text-light">
+            <div className="space-y-4">
+              <div className="prose prose-sm max-w-none">
+                {activity.description.split('\n').map((paragraph, index) => (
+                  <p key={index} className="text-spark-text-light">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-spark-text-light">
                 {activity.duration && (
                   <span className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
