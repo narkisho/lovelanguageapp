@@ -11,22 +11,29 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { prompt } = await req.json()
+    console.log('Received prompt:', prompt);
+
+    if (!prompt) {
+      throw new Error('No prompt provided');
+    }
 
     const message = await anthropic.messages.create({
       model: "claude-3-opus-20240229",
       max_tokens: 1024,
       messages: [{
         role: "user",
-        content: `As a relationship coach, help enhance and expand upon this relationship vision/goal. Make it more specific, actionable, and inspiring while maintaining the original intent: "${prompt}"`
+        content: `As a relationship coach, help enhance and expand upon this relationship vision/goal. Make it more specific, actionable, and inspiring while maintaining the original intent: "${prompt}". Focus on practical steps and measurable outcomes.`
       }]
     });
 
+    console.log('AI response received');
     const suggestion = message.content[0].text;
 
     return new Response(
@@ -37,7 +44,7 @@ serve(async (req) => {
       },
     )
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error in generate-vision-content:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
