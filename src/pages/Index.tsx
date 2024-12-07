@@ -95,6 +95,11 @@ const Index = () => {
                       },
                     },
                   },
+                  className: {
+                    container: 'auth-container',
+                    button: 'auth-button',
+                    input: 'auth-input',
+                  },
                 }}
                 providers={[]}
                 view="sign_in"
