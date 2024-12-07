@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Heart, Loader2 } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
+import { QuizQuestion } from "@/components/love-language/QuizQuestion";
+import { QuizResult } from "@/components/love-language/QuizResult";
 
 const questions = [
   {
@@ -128,6 +128,11 @@ const LoveLanguageQuiz = () => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showResults, setShowResults] = useState(false);
+  const [quizResults, setQuizResults] = useState<{
+    scores: Record<string, number>;
+    primaryLanguage: string;
+  } | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -153,6 +158,11 @@ const LoveLanguageQuiz = () => {
     setAnswers((prev) => ({ ...prev, [currentQuestion]: value }));
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
+    } else {
+      const results = calculateResults();
+      setQuizResults(results);
+      setShowResults(true);
+      handleSubmit(results);
     }
   };
 
@@ -180,14 +190,8 @@ const LoveLanguageQuiz = () => {
     return { scores, primaryLanguage };
   };
 
-  const handleSubmit = async () => {
-    if (Object.keys(answers).length < questions.length) {
-      toast.error("Please answer all questions before submitting");
-      return;
-    }
-
+  const handleSubmit = async (results: { scores: Record<string, number>; primaryLanguage: string }) => {
     setIsSubmitting(true);
-    const { scores, primaryLanguage } = calculateResults();
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -199,18 +203,17 @@ const LoveLanguageQuiz = () => {
 
       const { error } = await supabase.from("love_language_results").insert({
         user_id: session.user.id,
-        words_of_affirmation: scores.words_of_affirmation,
-        acts_of_service: scores.acts_of_service,
-        receiving_gifts: scores.receiving_gifts,
-        quality_time: scores.quality_time,
-        physical_touch: scores.physical_touch,
-        primary_language: primaryLanguage,
+        words_of_affirmation: results.scores.words_of_affirmation,
+        acts_of_service: results.scores.acts_of_service,
+        receiving_gifts: results.scores.receiving_gifts,
+        quality_time: results.scores.quality_time,
+        physical_touch: results.scores.physical_touch,
+        primary_language: results.primaryLanguage,
       });
 
       if (error) throw error;
 
       toast.success("Quiz completed! Your results have been saved.");
-      navigate("/dashboard");
     } catch (error) {
       console.error("Error saving results:", error);
       toast.error("Failed to save your results. Please try again.");
@@ -239,66 +242,46 @@ const LoveLanguageQuiz = () => {
           </p>
         </div>
 
-        <Card className="glass-card max-w-3xl mx-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5" />
-              Question {currentQuestion + 1} of {questions.length}
-            </CardTitle>
-            <CardDescription>
-              Choose the answer that best reflects your feelings
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-lg font-medium mb-4">
-              {questions[currentQuestion].text}
-            </div>
-            <RadioGroup
-              onValueChange={handleAnswer}
-              value={answers[currentQuestion]}
-              className="space-y-4"
+        {showResults && quizResults ? (
+          <QuizResult scores={quizResults.scores} primaryLanguage={quizResults.primaryLanguage} />
+        ) : (
+          <Card className="glass-card max-w-3xl mx-auto">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="w-5 h-5" />
+                Question {currentQuestion + 1} of {questions.length}
+              </CardTitle>
+              <CardDescription>
+                Choose the answer that best reflects your feelings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <QuizQuestion
+                question={questions[currentQuestion]}
+                onAnswer={handleAnswer}
+                selectedValue={answers[currentQuestion]}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {!showResults && (
+          <div className="flex justify-between max-w-3xl mx-auto px-4">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentQuestion((prev) => Math.max(0, prev - 1))}
+              disabled={currentQuestion === 0}
             >
-              {questions[currentQuestion].options.map((option) => (
-                <div key={option.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option.value} id={option.value} />
-                  <Label htmlFor={option.value} className="text-base">
-                    {option.text}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-
-            {currentQuestion === questions.length - 1 && (
-              <Button
-                onClick={handleSubmit}
-                className="w-full mt-4"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
-                ) : (
-                  <>Submit Quiz</>
-                )}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-between max-w-3xl mx-auto px-4">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentQuestion((prev) => Math.max(0, prev - 1))}
-            disabled={currentQuestion === 0}
-          >
-            Previous
-          </Button>
-          <Button
-            onClick={() => setCurrentQuestion((prev) => Math.min(questions.length - 1, prev + 1))}
-            disabled={currentQuestion === questions.length - 1 || !answers[currentQuestion]}
-          >
-            Next
-          </Button>
-        </div>
+              Previous
+            </Button>
+            <Button
+              onClick={() => setCurrentQuestion((prev) => Math.min(questions.length - 1, prev + 1))}
+              disabled={currentQuestion === questions.length - 1 || !answers[currentQuestion]}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
     </MainLayout>
   );
