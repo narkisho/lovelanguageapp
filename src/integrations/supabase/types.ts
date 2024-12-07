@@ -259,6 +259,42 @@ export type Database = {
         }
         Relationships: []
       }
+      valia_results: {
+        Row: {
+          core_values: Json
+          created_at: string
+          deal_breakers: Json
+          id: string
+          must_haves: Json
+          nice_to_haves: Json
+          reflection_notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          core_values?: Json
+          created_at?: string
+          deal_breakers?: Json
+          id?: string
+          must_haves?: Json
+          nice_to_haves?: Json
+          reflection_notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          core_values?: Json
+          created_at?: string
+          deal_breakers?: Json
+          id?: string
+          must_haves?: Json
+          nice_to_haves?: Json
+          reflection_notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vision_boards: {
         Row: {
           created_at: string

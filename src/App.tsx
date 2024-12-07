@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import LoveLanguageQuiz from "./pages/LoveLanguageQuiz";
 import VisionQuest from "./pages/VisionQuest";
+import ValiaQuiz from "./pages/ValiaQuiz";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/update-password" element={<UpdatePassword />} />
           <Route path="/love-language-quiz" element={<LoveLanguageQuiz />} />
           <Route path="/vision-quest" element={<VisionQuest />} />
+          <Route path="/valia-quiz" element={<ValiaQuiz />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
