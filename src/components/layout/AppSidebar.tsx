@@ -12,6 +12,7 @@ import {
   Languages,
   Sparkles,
   Target,
+  Scale,
 } from "lucide-react";
 
 export function AppSidebar() {
@@ -82,6 +83,14 @@ export function AppSidebar() {
               >
                 <Target className="mr-2 h-4 w-4" />
                 Vision Quest
+              </Button>
+              <Button
+                variant={location.pathname === "/valia-quiz" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/valia-quiz")}
+              >
+                <Scale className="mr-2 h-4 w-4" />
+                Valia Values Quiz
               </Button>
             </SidebarContent>
           </div>
