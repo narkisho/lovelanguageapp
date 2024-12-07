@@ -23,13 +23,18 @@ const CloserKit = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('closer_kit_preferences')
         .select('*')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', user.id);
 
-      setHasPreferences(!!data);
+      if (error) {
+        console.error('Error checking preferences:', error);
+        return;
+      }
+
+      // Check if we have any preferences at all
+      setHasPreferences(data && data.length > 0);
     } catch (error) {
       console.error('Error checking preferences:', error);
     }
