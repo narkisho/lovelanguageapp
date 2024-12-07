@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { type } = await req.json()
+    const { type, preferences } = await req.json()
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -29,7 +29,7 @@ serve(async (req) => {
         messages: [{
           role: 'user',
           content: type === 'scenario' 
-            ? 'Generate a relationship scenario with 3 response options. Return as JSON with format: { title: string, description: string, options: string[] }. Make it engaging and realistic.'
+            ? `Generate a relationship-building ${preferences.category} for a ${preferences.stage} couple that takes ${preferences.duration} duration. Return as JSON with format: { title: string, description: string, options: string[] }. Make it engaging and meaningful.`
             : 'Generate a romantic experiment for couples. Return as JSON with format: { title: string, description: string, duration: string, materials: string[] }. Make it fun and meaningful.'
         }]
       })
