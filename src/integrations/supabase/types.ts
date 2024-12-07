@@ -9,6 +9,41 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      journal_entries: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          mood: string | null
+          relationship_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          mood?: string | null
+          relationship_id?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          mood?: string | null
+          relationship_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entries_relationship_id_fkey"
+            columns: ["relationship_id"]
+            isOneToOne: false
+            referencedRelation: "relationships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       love_language_results: {
         Row: {
           acts_of_service: number | null
@@ -44,6 +79,50 @@ export type Database = {
           words_of_affirmation?: number | null
         }
         Relationships: []
+      }
+      meeting_plans: {
+        Row: {
+          attendees: Json | null
+          created_at: string
+          id: string
+          location: string | null
+          meeting_date: string | null
+          notes: string | null
+          relationship_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendees?: Json | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          meeting_date?: string | null
+          notes?: string | null
+          relationship_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendees?: Json | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          meeting_date?: string | null
+          notes?: string | null
+          relationship_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_plans_relationship_id_fkey"
+            columns: ["relationship_id"]
+            isOneToOne: false
+            referencedRelation: "relationships"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -89,6 +168,33 @@ export type Database = {
           completed_at?: string | null
           details?: Json | null
           id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      relationships: {
+        Row: {
+          created_at: string
+          id: string
+          partner_name: string
+          relationship_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_name: string
+          relationship_status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_name?: string
+          relationship_status?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
