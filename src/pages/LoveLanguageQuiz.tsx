@@ -122,6 +122,14 @@ const questions = [
   },
 ];
 
+interface LoveLanguageScores {
+  words_of_affirmation: number;
+  acts_of_service: number;
+  receiving_gifts: number;
+  quality_time: number;
+  physical_touch: number;
+}
+
 const LoveLanguageQuiz = () => {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -130,7 +138,7 @@ const LoveLanguageQuiz = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const [quizResults, setQuizResults] = useState<{
-    scores: Record<string, number>;
+    scores: LoveLanguageScores;
     primaryLanguage: string;
   } | null>(null);
 
@@ -141,7 +149,7 @@ const LoveLanguageQuiz = () => {
   const checkAuth = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!session?.user) {
         toast.error("Please login to take the quiz");
         navigate("/");
         return;
@@ -167,7 +175,7 @@ const LoveLanguageQuiz = () => {
   };
 
   const calculateResults = () => {
-    const scores = {
+    const scores: LoveLanguageScores = {
       words_of_affirmation: 0,
       acts_of_service: 0,
       receiving_gifts: 0,
@@ -179,23 +187,23 @@ const LoveLanguageQuiz = () => {
       const question = questions[parseInt(questionId)];
       const selectedOption = question.options.find((opt) => opt.value === answer);
       if (selectedOption) {
-        scores[selectedOption.type as keyof typeof scores] += 1;
+        scores[selectedOption.type as keyof LoveLanguageScores] += 1;
       }
     });
 
     const primaryLanguage = Object.entries(scores).reduce((a, b) => 
-      scores[a[0] as keyof typeof scores] > scores[b[0] as keyof typeof scores] ? a : b
+      scores[a[0] as keyof LoveLanguageScores] > scores[b[0] as keyof LoveLanguageScores] ? a : b
     )[0];
 
     return { scores, primaryLanguage };
   };
 
-  const handleSubmit = async (results: { scores: Record<string, number>; primaryLanguage: string }) => {
+  const handleSubmit = async (results: { scores: LoveLanguageScores; primaryLanguage: string }) => {
     setIsSubmitting(true);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!session?.user) {
         toast.error("Please login to submit your results");
         navigate("/");
         return;
@@ -211,7 +219,10 @@ const LoveLanguageQuiz = () => {
         primary_language: results.primaryLanguage,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error saving results:", error);
+        throw error;
+      }
 
       toast.success("Quiz completed! Your results have been saved.");
     } catch (error) {
