@@ -2,10 +2,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { ChatAnthropic } from "npm:@anthropic-ai/sdk"
 
-const anthropic = new ChatAnthropic({
-  apiKey: Deno.env.get('ANTHROPIC_API_KEY')!,
-});
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -18,12 +14,17 @@ serve(async (req) => {
   }
 
   try {
-    const { type, answers } = await req.json()
-    console.log('Generating activity with preferences:', answers)
-
     if (!Deno.env.get('ANTHROPIC_API_KEY')) {
+      console.error('ANTHROPIC_API_KEY is not set');
       throw new Error('ANTHROPIC_API_KEY is not set')
     }
+
+    const anthropic = new ChatAnthropic({
+      apiKey: Deno.env.get('ANTHROPIC_API_KEY')!,
+    });
+
+    const { type, answers } = await req.json()
+    console.log('Generating activity with preferences:', answers)
 
     const relationshipStage = answers?.relationshipStage || 'any'
     const intimacyLevel = answers?.intimacyLevel || 'moderate'
@@ -58,7 +59,12 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify(generatedContent),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      },
     )
   } catch (error) {
     console.error('Error:', error)
@@ -66,7 +72,10 @@ serve(async (req) => {
       JSON.stringify({ error: error.message }),
       { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        }
       },
     )
   }
