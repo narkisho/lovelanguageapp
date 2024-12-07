@@ -1,4 +1,11 @@
-import { Heart, Calendar, MessageSquare, Beaker, BarChart, Home } from "lucide-react";
+import { 
+  Home,
+  Sparkles,
+  GamepadIcon,
+  HeartHandshake,
+  Trophy,
+  Heart
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -13,10 +20,10 @@ import {
 
 const menuItems = [
   { title: "Dashboard", icon: Home, url: "/dashboard" },
-  { title: "Date Generator", icon: Calendar, url: "/date-generator" },
-  { title: "Chemistry Lab", icon: Beaker, url: "/chemistry-lab" },
-  { title: "Conversation Hub", icon: MessageSquare, url: "/conversation-hub" },
-  { title: "Progress", icon: BarChart, url: "/progress" },
+  { title: "Date Generator", icon: Sparkles, url: "/date-generator" },
+  { title: "Chemistry Lab", icon: GamepadIcon, url: "/chemistry-lab" },
+  { title: "Conversation Hub", icon: HeartHandshake, url: "/conversation-hub" },
+  { title: "Progress", icon: Trophy, url: "/progress" },
 ];
 
 export function AppSidebar() {
@@ -40,10 +47,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <Link 
                       to={item.url} 
-                      className="flex items-center gap-3"
+                      className="flex items-center gap-3 group"
                       data-active={location.pathname === item.url}
                     >
-                      <item.icon className="w-5 h-5" />
+                      <item.icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
