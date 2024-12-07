@@ -1,68 +1,92 @@
-import { 
-  Home,
-  Sparkles,
-  GamepadIcon,
-  HeartHandshake,
-  Trophy,
-  Heart,
-  Languages,
-  Target
-} from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { SidebarContent } from "@/components/ui/sidebar";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-
-const menuItems = [
-  { title: "Dashboard", icon: Home, url: "/dashboard" },
-  { title: "Date Generator", icon: Sparkles, url: "/date-generator" },
-  { title: "Chemistry Lab", icon: GamepadIcon, url: "/chemistry-lab" },
-  { title: "Conversation Hub", icon: HeartHandshake, url: "/conversation-hub" },
-  { title: "Progress", icon: Trophy, url: "/progress" },
-  { title: "Love Language Quiz", icon: Languages, url: "/love-language-quiz" },
-  { title: "VisionQuest", icon: Target, url: "/vision-quest" },
-];
+  Heart,
+  CalendarDays,
+  FlaskConical,
+  MessageCircle,
+  LineChart,
+  Languages,
+  Sparkles,
+  Target,
+} from "lucide-react";
 
 export function AppSidebar() {
+  const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <div className="p-4">
-          <div className="flex items-center gap-2 px-2">
-            <Heart className="w-6 h-6 text-primary animate-float" />
-            <span className="text-xl font-semibold text-gradient">SparkRevive</span>
+    <div className="pb-12">
+      <div className="space-y-4 py-4">
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+            Features
+          </h2>
+          <div className="space-y-1">
+            <Button
+              variant={location.pathname === "/dashboard" ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => navigate("/dashboard")}
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              Ask Spark Revive
+            </Button>
+            <SidebarContent>
+              <Button
+                variant={location.pathname === "/date-generator" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/date-generator")}
+              >
+                <CalendarDays className="mr-2 h-4 w-4" />
+                Date Generator
+              </Button>
+              <Button
+                variant={location.pathname === "/chemistry-lab" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/chemistry-lab")}
+              >
+                <FlaskConical className="mr-2 h-4 w-4" />
+                Chemistry Lab
+              </Button>
+              <Button
+                variant={location.pathname === "/conversation-hub" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/conversation-hub")}
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Conversation Hub
+              </Button>
+              <Button
+                variant={location.pathname === "/progress" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/progress")}
+              >
+                <LineChart className="mr-2 h-4 w-4" />
+                Progress
+              </Button>
+              <Button
+                variant={location.pathname === "/love-language-quiz" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/love-language-quiz")}
+              >
+                <Languages className="mr-2 h-4 w-4" />
+                Love Language Quiz
+              </Button>
+              <Button
+                variant={location.pathname === "/vision-quest" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/vision-quest")}
+              >
+                <Target className="mr-2 h-4 w-4" />
+                Vision Quest
+              </Button>
+            </SidebarContent>
           </div>
         </div>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link 
-                      to={item.url} 
-                      className="flex items-center gap-3 group"
-                      data-active={location.pathname === item.url}
-                    >
-                      <item.icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+      </div>
+    </div>
   );
 }
