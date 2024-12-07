@@ -14,13 +14,14 @@ serve(async (req) => {
   }
 
   try {
-    if (!Deno.env.get('ANTHROPIC_API_KEY')) {
-      console.error('ANTHROPIC_API_KEY is not set');
+    const apiKey = Deno.env.get('ANTHROPIC_API_KEY')
+    if (!apiKey) {
+      console.error('ANTHROPIC_API_KEY is not set')
       throw new Error('ANTHROPIC_API_KEY is not set')
     }
 
     const anthropic = new ChatAnthropic({
-      apiKey: Deno.env.get('ANTHROPIC_API_KEY')!,
+      apiKey: apiKey,
     });
 
     const { type, answers } = await req.json()
