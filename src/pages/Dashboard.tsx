@@ -8,10 +8,12 @@ import { LogOut, Send, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signOut } = useAuth();
   const [question, setQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [conversations, setConversations] = useState<any[]>([]);
@@ -184,7 +186,7 @@ const Dashboard = () => {
           </div>
           <Button 
             variant="outline" 
-            onClick={handleSignOut}
+            onClick={signOut}
             className="flex items-center gap-2"
           >
             <LogOut className="w-4 h-4" />
