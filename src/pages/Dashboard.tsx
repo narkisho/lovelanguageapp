@@ -58,19 +58,42 @@ const Dashboard = () => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
-      });
-      navigate("/");
+      // First check if we have a valid session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session exists, just redirect to home
+        navigate("/");
+        return;
+      }
+
+      // Attempt to sign out
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Error signing out:", error);
+        // If we get a session_not_found error, just redirect to home
+        if (error.message.includes("session_not_found")) {
+          navigate("/");
+          return;
+        }
+        // For other errors, show the error message
+        toast({
+          title: "Error",
+          description: "Failed to sign out. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signed out",
+          description: "You have been successfully signed out.",
+        });
+        navigate("/");
+      }
     } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Error in sign out process:", error);
+      // If any unexpected error occurs, redirect to home
+      navigate("/");
     }
   };
 
