@@ -38,6 +38,10 @@ export function ActivityForm({ onSubmit, onCancel, generating }: ActivityFormPro
   });
 
   const handleSubmit = async () => {
+    if (!preferences.relationshipStage || !preferences.intimacyLevel || 
+        !preferences.duration || !preferences.location) {
+      return; // Don't submit if any field is empty
+    }
     await onSubmit(preferences);
   };
 
@@ -130,7 +134,9 @@ export function ActivityForm({ onSubmit, onCancel, generating }: ActivityFormPro
           <div className="flex gap-4 pt-4">
             <Button
               onClick={handleSubmit}
-              disabled={generating}
+              disabled={generating || !preferences.relationshipStage || 
+                !preferences.intimacyLevel || !preferences.duration || 
+                !preferences.location}
               className="w-full"
             >
               {generating ? (

@@ -120,7 +120,7 @@ export default function CloserKit() {
           </div>
           <Button
             onClick={() => setShowQuestionnaire(true)}
-            className="bg-spark-rose hover:bg-spark-rose/90 w-full sm:w-auto animate-pulse hover:animate-none"
+            className="bg-spark-sage hover:bg-spark-sage/90 w-full sm:w-auto animate-pulse hover:animate-none"
             size="lg"
           >
             <HeartHandshake className="mr-2 h-5 w-5" />
@@ -140,7 +140,7 @@ export default function CloserKit() {
           {loading ? (
             <Card>
               <CardContent className="flex items-center justify-center py-6">
-                <Loader2 className="h-8 w-8 animate-spin text-spark-rose" />
+                <Loader2 className="h-8 w-8 animate-spin text-spark-sage" />
               </CardContent>
             </Card>
           ) : activities.length === 0 ? (
