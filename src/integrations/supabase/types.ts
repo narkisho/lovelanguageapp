@@ -11,64 +11,106 @@ export type Database = {
     Tables: {
       ai_conversations: {
         Row: {
+          id: string
+          user_id: string
+          question: string
           answer: string
           created_at: string
-          id: string
-          question: string
-          user_id: string
         }
         Insert: {
+          id?: string
+          user_id: string
+          question: string
           answer: string
           created_at?: string
-          id?: string
-          question: string
-          user_id: string
         }
         Update: {
+          id?: string
+          user_id?: string
+          question?: string
           answer?: string
           created_at?: string
-          id?: string
-          question?: string
-          user_id?: string
         }
         Relationships: []
       }
       closer_kit_activities: {
         Row: {
-          category: string
-          completed: boolean | null
-          created_at: string
-          description: string
           id: string
-          reflection_notes: string | null
-          stage: string
-          title: string
-          updated_at: string
           user_id: string
+          title: string
+          description: string
+          category: string
+          stage: string
+          completed: boolean | null
+          reflection_notes: string | null
+          duration: number | null
+          location: string | null
+          difficulty_level: number
+          is_favorite: boolean
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          category: string
-          completed?: boolean | null
-          created_at?: string
-          description: string
           id?: string
-          reflection_notes?: string | null
-          stage: string
-          title: string
-          updated_at?: string
           user_id: string
+          title: string
+          description: string
+          category: string
+          stage: string
+          completed?: boolean | null
+          reflection_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          duration?: number | null
+          location?: string | null
+          difficulty_level: number
+          is_favorite?: boolean
         }
         Update: {
-          category?: string
-          completed?: boolean | null
-          created_at?: string
-          description?: string
           id?: string
-          reflection_notes?: string | null
-          stage?: string
-          title?: string
-          updated_at?: string
           user_id?: string
+          title?: string
+          description?: string
+          category?: string
+          stage?: string
+          completed?: boolean | null
+          reflection_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          duration?: number | null
+          location?: string | null
+          difficulty_level?: number
+          is_favorite?: boolean
+        }
+        Relationships: []
+      }
+      closer_kit_preferences: {
+        Row: {
+          id: string
+          user_id: string
+          relationship_level: string
+          activity_duration: number
+          location: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          relationship_level: string
+          activity_duration: number
+          location: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          relationship_level?: string
+          activity_duration?: number
+          location?: string
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -488,10 +530,10 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+      Row: infer R
+    }
+    ? R
+    : never
     : never
 
 export type TablesInsert<
@@ -509,10 +551,10 @@ export type TablesInsert<
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+      Insert: infer I
+    }
+    ? I
+    : never
     : never
 
 export type TablesUpdate<
@@ -530,10 +572,10 @@ export type TablesUpdate<
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+      Update: infer U
+    }
+    ? U
+    : never
     : never
 
 export type Enums<
@@ -547,19 +589,4 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

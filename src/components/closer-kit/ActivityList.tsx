@@ -11,10 +11,11 @@ interface Activity {
   description: string;
   category: string;
   stage: string;
-  duration: number;
+  duration: number | null;
   difficulty_level: number;
-  completed: boolean;
+  completed: boolean | null;
   is_favorite: boolean;
+  location: string | null;
 }
 
 export function ActivityList() {
@@ -37,7 +38,7 @@ export function ActivityList() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setActivities(data);
+      setActivities(data || []);
     } catch (error) {
       console.error('Error fetching activities:', error);
       toast.error("Failed to load activities");
@@ -114,7 +115,7 @@ export function ActivityList() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => toggleComplete(activity.id, activity.completed)}
+                  onClick={() => toggleComplete(activity.id, activity.completed || false)}
                 >
                   <CheckCircle
                     className={`h-5 w-5 ${
@@ -129,12 +130,15 @@ export function ActivityList() {
             <div className="space-y-2">
               <p className="text-spark-text-light">{activity.description}</p>
               <div className="flex items-center gap-4 text-sm text-spark-text-light">
-                <span className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {activity.duration} minutes
-                </span>
+                {activity.duration && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-4 w-4" />
+                    {activity.duration} minutes
+                  </span>
+                )}
                 <span>Difficulty: {activity.difficulty_level}/5</span>
                 <span>Category: {activity.category}</span>
+                {activity.location && <span>Location: {activity.location}</span>}
               </div>
             </div>
           </CardContent>
