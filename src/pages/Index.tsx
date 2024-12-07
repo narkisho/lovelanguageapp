@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { Calendar, MessageSquare, Flask, BarChart } from "lucide-react";
+import { Calendar, MessageSquare, Beaker, BarChart } from "lucide-react";
 
 const features = [
   {
@@ -12,7 +12,7 @@ const features = [
   {
     title: "Chemistry Lab",
     description: "Interactive scenarios to strengthen your bond",
-    icon: Flask,
+    icon: Beaker,
     color: "bg-spark-lavender",
   },
   {

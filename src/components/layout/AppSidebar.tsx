@@ -1,4 +1,4 @@
-import { Heart, Calendar, MessageSquare, Flask, BarChart, Home } from "lucide-react";
+import { Heart, Calendar, MessageSquare, Beaker, BarChart, Home } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +13,7 @@ import {
 const menuItems = [
   { title: "Dashboard", icon: Home, url: "/" },
   { title: "Date Generator", icon: Calendar, url: "/date-generator" },
-  { title: "Chemistry Lab", icon: Flask, url: "/chemistry-lab" },
+  { title: "Chemistry Lab", icon: Beaker, url: "/chemistry-lab" },
   { title: "Conversation Hub", icon: MessageSquare, url: "/conversation-hub" },
   { title: "Progress", icon: BarChart, url: "/progress" },
 ];
