@@ -9,6 +9,8 @@ import DateGenerator from "./pages/DateGenerator";
 import ChemistryLab from "./pages/ChemistryLab";
 import ConversationHub from "./pages/ConversationHub";
 import Progress from "./pages/Progress";
+import ResetPassword from "./pages/ResetPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/chemistry-lab" element={<ChemistryLab />} />
           <Route path="/conversation-hub" element={<ConversationHub />} />
           <Route path="/progress" element={<Progress />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/update-password" element={<UpdatePassword />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
