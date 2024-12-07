@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      love_language_results: {
+        Row: {
+          acts_of_service: number | null
+          created_at: string | null
+          id: string
+          physical_touch: number | null
+          primary_language: string | null
+          quality_time: number | null
+          receiving_gifts: number | null
+          user_id: string
+          words_of_affirmation: number | null
+        }
+        Insert: {
+          acts_of_service?: number | null
+          created_at?: string | null
+          id?: string
+          physical_touch?: number | null
+          primary_language?: string | null
+          quality_time?: number | null
+          receiving_gifts?: number | null
+          user_id: string
+          words_of_affirmation?: number | null
+        }
+        Update: {
+          acts_of_service?: number | null
+          created_at?: string | null
+          id?: string
+          physical_touch?: number | null
+          primary_language?: string | null
+          quality_time?: number | null
+          receiving_gifts?: number | null
+          user_id?: string
+          words_of_affirmation?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

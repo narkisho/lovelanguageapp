@@ -4,7 +4,8 @@ import {
   GamepadIcon,
   HeartHandshake,
   Trophy,
-  Heart
+  Heart,
+  Languages
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -24,6 +25,7 @@ const menuItems = [
   { title: "Chemistry Lab", icon: GamepadIcon, url: "/chemistry-lab" },
   { title: "Conversation Hub", icon: HeartHandshake, url: "/conversation-hub" },
   { title: "Progress", icon: Trophy, url: "/progress" },
+  { title: "Love Language Quiz", icon: Languages, url: "/love-language-quiz" },
 ];
 
 export function AppSidebar() {

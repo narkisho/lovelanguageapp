@@ -11,6 +11,7 @@ import ConversationHub from "./pages/ConversationHub";
 import Progress from "./pages/Progress";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
+import LoveLanguageQuiz from "./pages/LoveLanguageQuiz";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/progress" element={<Progress />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/update-password" element={<UpdatePassword />} />
+          <Route path="/love-language-quiz" element={<LoveLanguageQuiz />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
