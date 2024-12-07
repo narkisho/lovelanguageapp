@@ -12,27 +12,38 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { type } = await req.json()
-    console.log('Generating activity of type:', type)
+    const { type, answers } = await req.json()
+    console.log('Generating activity with answers:', answers)
 
-    const stages = ['discovery', 'deepening', 'commitment']
-    const categories = ['emotional', 'physical', 'communication', 'sensory', 'creative']
-    
-    const stage = stages[Math.floor(Math.random() * stages.length)]
-    const category = categories[Math.floor(Math.random() * categories.length)]
+    // Use the answers to create a more personalized prompt
+    const relationshipStage = answers?.relationshipStage || 'any'
+    const intimacyLevel = answers?.intimacyLevel || 'moderate'
+    const activityDuration = answers?.duration || '30-60 minutes'
+    const location = answers?.location || 'indoor'
 
     const message = await anthropic.messages.create({
       model: "claude-3-opus-20240229",
       max_tokens: 1000,
       messages: [{
         role: "user",
-        content: `Generate an intimate activity for couples in the ${stage} stage of their relationship, focusing on ${category} connection. Include a title and detailed description. Format as JSON with fields: title, description, category, stage. Keep it tasteful and respectful.`
+        content: `Generate an intimate activity for couples with these preferences:
+          - Relationship Stage: ${relationshipStage}
+          - Intimacy Level: ${intimacyLevel}
+          - Duration: ${activityDuration}
+          - Location: ${location}
+          
+          Format as JSON with fields: 
+          - title (string)
+          - description (string)
+          - category (one of: emotional, physical, communication, sensory, creative)
+          - stage (one of: discovery, deepening, commitment)
+          
+          Keep it tasteful and respectful.`
       }]
     });
 
