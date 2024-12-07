@@ -1,16 +1,26 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface PreferencesFormData {
-  relationship_level: string;
-  activity_duration: string;
-  location: string;
-}
+const formSchema = z.object({
+  relationship_level: z.string({
+    required_error: "Please select a relationship level",
+  }),
+  activity_duration: z.string({
+    required_error: "Please select an activity duration",
+  }),
+  location: z.string({
+    required_error: "Please select a location preference",
+  }),
+});
+
+type PreferencesFormData = z.infer<typeof formSchema>;
 
 interface PreferencesFormProps {
   onSaved?: () => void;
@@ -18,7 +28,15 @@ interface PreferencesFormProps {
 
 export function PreferencesForm({ onSaved }: PreferencesFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const form = useForm<PreferencesFormData>();
+  
+  const form = useForm<PreferencesFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      relationship_level: "",
+      activity_duration: "",
+      location: "",
+    },
+  });
 
   const onSubmit = async (data: PreferencesFormData) => {
     setIsLoading(true);
@@ -69,6 +87,7 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
                   <SelectItem value="married">Married</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -92,6 +111,7 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
                   <SelectItem value="120">2 hours</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -114,6 +134,7 @@ export function PreferencesForm({ onSaved }: PreferencesFormProps) {
                   <SelectItem value="both">Both Indoor & Outdoor</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           )}
         />
