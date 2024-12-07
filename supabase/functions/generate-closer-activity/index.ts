@@ -15,6 +15,7 @@ serve(async (req) => {
 
   try {
     const { preferences } = await req.json()
+    console.log('Generating activity with preferences:', preferences)
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -28,18 +29,24 @@ serve(async (req) => {
         max_tokens: 1000,
         messages: [{
           role: 'user',
-          content: `Generate a relationship-building activity based on these preferences: ${JSON.stringify(preferences)}. 
-          Return as JSON with format: {
-            title: string,
-            description: string,
-            category: string,
-            stage: string,
-            duration: number,
-            materials: string[],
-            instructions: string[],
-            reflection_questions: string[],
-            difficulty_level: number
-          }`
+          content: `Generate a relationship-building activity based on these preferences:
+            - Relationship Level: ${preferences.relationship_level}
+            - Duration: ${preferences.activity_duration} minutes
+            - Location: ${preferences.location}
+            
+            Return as JSON with format: {
+              title: string,
+              description: string,
+              category: string,
+              stage: string,
+              duration: number,
+              difficulty_level: number (1-5),
+              materials: string[],
+              instructions: string[],
+              reflection_questions: string[]
+            }
+            
+            Make it engaging, appropriate for the relationship level, and focused on building emotional connection.`
         }]
       })
     })

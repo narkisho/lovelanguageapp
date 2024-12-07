@@ -6,9 +6,39 @@ import { PreferencesForm } from "@/components/closer-kit/PreferencesForm";
 import { ActivityList } from "@/components/closer-kit/ActivityList";
 import { ActivityForm } from "@/components/closer-kit/ActivityForm";
 import { FlaskConical, ListChecks, Settings } from "lucide-react";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const CloserKit = () => {
-  const [activeTab, setActiveTab] = useState("activities");
+  const [activeTab, setActiveTab] = useState("new");
+  const [hasPreferences, setHasPreferences] = useState(false);
+
+  useEffect(() => {
+    checkPreferences();
+  }, []);
+
+  const checkPreferences = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('closer_kit_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      setHasPreferences(!!data);
+    } catch (error) {
+      console.error('Error checking preferences:', error);
+    }
+  };
+
+  const onPreferencesSaved = () => {
+    setHasPreferences(true);
+    toast.success("Preferences saved! You can now generate activities.");
+  };
 
   return (
     <MainLayout>
@@ -30,13 +60,13 @@ const CloserKit = () => {
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="activities">
-                  <ListChecks className="w-4 h-4 mr-2" />
-                  Activities
-                </TabsTrigger>
                 <TabsTrigger value="new">
                   <FlaskConical className="w-4 h-4 mr-2" />
                   Generate New
+                </TabsTrigger>
+                <TabsTrigger value="activities">
+                  <ListChecks className="w-4 h-4 mr-2" />
+                  Activities
                 </TabsTrigger>
                 <TabsTrigger value="preferences">
                   <Settings className="w-4 h-4 mr-2" />
@@ -44,16 +74,27 @@ const CloserKit = () => {
                 </TabsTrigger>
               </TabsList>
 
+              <TabsContent value="new" className="mt-4">
+                {!hasPreferences ? (
+                  <Card>
+                    <CardContent className="pt-6">
+                      <p className="text-center text-spark-text-light mb-4">
+                        Please set your preferences before generating activities
+                      </p>
+                      <PreferencesForm onSaved={onPreferencesSaved} />
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <ActivityForm />
+                )}
+              </TabsContent>
+
               <TabsContent value="activities" className="mt-4">
                 <ActivityList />
               </TabsContent>
 
-              <TabsContent value="new" className="mt-4">
-                <ActivityForm />
-              </TabsContent>
-
               <TabsContent value="preferences" className="mt-4">
-                <PreferencesForm />
+                <PreferencesForm onSaved={onPreferencesSaved} />
               </TabsContent>
             </Tabs>
           </CardContent>
