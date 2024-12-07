@@ -55,7 +55,8 @@ const Index = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      console.log("Session check:", session, error);
       if (session) {
         navigate("/dashboard");
       }
@@ -63,12 +64,19 @@ const Index = () => {
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state change:", event, session);
       if (event === "SIGNED_IN" && session) {
         toast({
           title: "Welcome!",
           description: "Successfully signed in.",
         });
         navigate("/dashboard");
+      }
+      if (event === "USER_UPDATED") {
+        console.log("User updated event received");
+      }
+      if (event === "SIGNED_OUT") {
+        console.log("User signed out");
       }
     });
 
@@ -155,6 +163,14 @@ const Index = () => {
               view="sign_in"
               showLinks={true}
               theme="light"
+              onError={(error) => {
+                console.error("Auth error:", error);
+                toast({
+                  title: "Authentication Error",
+                  description: error.message,
+                  variant: "destructive",
+                });
+              }}
             />
           </Card>
         </DialogContent>
