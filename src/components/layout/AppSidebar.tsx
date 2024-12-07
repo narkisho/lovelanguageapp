@@ -12,7 +12,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -30,35 +29,34 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar>
+    <Sidebar className="w-full h-auto border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <SidebarContent>
-        <div className="p-4">
-          <div className="flex items-center gap-2 px-2">
+        <div className="container flex h-16 items-center px-4">
+          <div className="flex items-center gap-2 mr-8">
             <Heart className="w-6 h-6 text-primary animate-float" />
             <span className="text-xl font-semibold text-gradient">SparkRevive</span>
           </div>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu className="flex flex-row items-center gap-6">
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link 
+                        to={item.url} 
+                        className="flex items-center gap-2 group"
+                        data-active={location.pathname === item.url}
+                      >
+                        <item.icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         </div>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link 
-                      to={item.url} 
-                      className="flex items-center gap-3 group"
-                      data-active={location.pathname === item.url}
-                    >
-                      <item.icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
