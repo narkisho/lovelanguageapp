@@ -44,6 +44,7 @@ export type Database = {
           id: string
           is_favorite: boolean
           location: string | null
+          partner_roles: Json | null
           reflection_notes: string | null
           stage: string
           title: string
@@ -60,6 +61,7 @@ export type Database = {
           id?: string
           is_favorite?: boolean
           location?: string | null
+          partner_roles?: Json | null
           reflection_notes?: string | null
           stage: string
           title: string
@@ -76,6 +78,7 @@ export type Database = {
           id?: string
           is_favorite?: boolean
           location?: string | null
+          partner_roles?: Json | null
           reflection_notes?: string | null
           stage?: string
           title?: string

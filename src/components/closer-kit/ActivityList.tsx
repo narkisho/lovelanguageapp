@@ -16,6 +16,18 @@ interface Activity {
   completed: boolean | null;
   is_favorite: boolean;
   location: string | null;
+  partner_roles: {
+    partner1: {
+      title: string;
+      tasks: string[];
+      preparation: string[];
+    };
+    partner2: {
+      title: string;
+      tasks: string[];
+      preparation: string[];
+    };
+  } | null;
 }
 
 export function ActivityList() {
@@ -132,11 +144,28 @@ export function ActivityList() {
           <CardContent>
             <div className="space-y-4">
               <div className="prose prose-sm max-w-none">
-                {activity.description.split('\n').map((paragraph, index) => (
-                  <p key={index} className="text-spark-text-light">
-                    {paragraph}
-                  </p>
-                ))}
+                <p className="text-spark-text-light mb-4">{activity.description}</p>
+                
+                {activity.partner_roles && (
+                  <div className="space-y-4 mt-4">
+                    <div className="bg-primary/5 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">{activity.partner_roles.partner1.title}</h4>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {activity.partner_roles.partner1.tasks.map((task, index) => (
+                          <li key={index} className="text-spark-text-light">{task}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-primary/5 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">{activity.partner_roles.partner2.title}</h4>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {activity.partner_roles.partner2.tasks.map((task, index) => (
+                          <li key={index} className="text-spark-text-light">{task}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex flex-wrap items-center gap-4 text-sm text-spark-text-light">
                 {activity.duration && (

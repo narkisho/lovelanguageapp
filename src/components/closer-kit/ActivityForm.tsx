@@ -26,23 +26,41 @@ export function ActivityForm() {
         return;
       }
 
+      console.log('Generating activity with preferences:', preferences);
+
       // Generate activity using the edge function
       const { data: activity, error: genError } = await supabase.functions.invoke(
         'generate-closer-activity',
         { body: { preferences } }
       );
 
-      if (genError) throw genError;
+      if (genError) {
+        console.error('Generation error:', genError);
+        throw genError;
+      }
+
+      console.log('Generated activity:', activity);
 
       // Save the generated activity
       const { error: saveError } = await supabase
         .from('closer_kit_activities')
         .insert({
           user_id: user.id,
-          ...activity,
+          title: activity.title,
+          description: activity.description,
+          category: activity.category,
+          stage: activity.stage,
+          duration: activity.duration,
+          difficulty_level: activity.difficulty_level,
+          location: activity.location,
+          partner_roles: activity.partner_roles,
+          is_favorite: false,
         });
 
-      if (saveError) throw saveError;
+      if (saveError) {
+        console.error('Save error:', saveError);
+        throw saveError;
+      }
 
       toast.success("New activity generated!");
     } catch (error) {
