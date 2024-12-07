@@ -8,7 +8,6 @@ import { LogOut, Send, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { SubscriptionCheck } from "@/components/subscription/SubscriptionCheck";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -24,37 +23,6 @@ const Dashboard = () => {
       if (!session) {
         navigate("/");
       } else {
-        // Check subscription status from URL params
-        const urlParams = new URLSearchParams(window.location.search);
-        const success = urlParams.get('success');
-        const subscriptionId = urlParams.get('subscription_id');
-
-        if (success === 'true' && subscriptionId) {
-          try {
-            const { error } = await supabase.functions.invoke('handle-paypal', {
-              body: { action: 'verify_subscription', subscriptionId },
-            });
-            if (error) throw error;
-            toast({
-              title: "Success",
-              description: "Your subscription has been activated!",
-            });
-          } catch (error) {
-            console.error('Error verifying subscription:', error);
-            toast({
-              title: "Error",
-              description: "Failed to verify subscription",
-              variant: "destructive",
-            });
-          }
-        } else if (success === 'false') {
-          toast({
-            title: "Cancelled",
-            description: "Subscription process was cancelled",
-            variant: "destructive",
-          });
-        }
-
         // Fetch previous conversations
         const { data, error } = await supabase
           .from('ai_conversations')
@@ -195,8 +163,6 @@ const Dashboard = () => {
             Sign Out
           </Button>
         </div>
-
-        <SubscriptionCheck />
 
         <Card className="glass-card">
           <CardHeader>
