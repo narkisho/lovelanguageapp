@@ -97,6 +97,8 @@ const Index = () => {
                   },
                 }}
                 providers={[]}
+                view="sign_in"
+                showLinks={true}
                 theme="light"
               />
             </Card>
