@@ -14,6 +14,7 @@ import {
   Target,
   Scale,
   Beaker,
+  Users,
 } from "lucide-react";
 
 export function AppSidebar() {
@@ -100,6 +101,14 @@ export function AppSidebar() {
               >
                 <Scale className="mr-2 h-4 w-4" />
                 Valia Values Quiz
+              </Button>
+              <Button
+                variant={location.pathname === "/community" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => navigate("/community")}
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Community
               </Button>
             </SidebarContent>
           </div>
