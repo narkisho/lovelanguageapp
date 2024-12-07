@@ -1,68 +1,67 @@
+import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FlaskConical, Beaker, Heart, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { FlaskConical, Beaker, Heart, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Scenario {
-  id: number;
   title: string;
   description: string;
   options: string[];
 }
 
 interface Experiment {
-  id: number;
   title: string;
   description: string;
   duration: string;
   materials: string[];
 }
 
-const scenarios: Scenario[] = [
-  {
-    id: 1,
-    title: "Date Night Surprise",
-    description: "Your partner has planned a surprise evening, but you're feeling tired after work. How do you respond?",
-    options: [
-      "Express gratitude and get excited about their effort",
-      "Be honest about your tiredness but suggest a compromise",
-      "Ask to postpone for another day"
-    ]
-  },
-  {
-    id: 2,
-    title: "Communication Challenge",
-    description: "You notice your partner seems distant lately. What's your approach?",
-    options: [
-      "Create a comfortable space for open dialogue",
-      "Write them a heartfelt letter",
-      "Plan a special activity to reconnect"
-    ]
-  }
-];
-
-const experiments: Experiment[] = [
-  {
-    id: 1,
-    title: "Trust Fall 2.0",
-    description: "A modern take on the classic trust-building exercise, designed for couples.",
-    duration: "15 minutes",
-    materials: ["Comfortable space", "Blindfold", "Soft music"]
-  },
-  {
-    id: 2,
-    title: "Memory Time Capsule",
-    description: "Create a collection of shared memories and future dreams together.",
-    duration: "30 minutes",
-    materials: ["Journal", "Photos", "Small mementos", "Decorative box"]
-  }
-];
-
 const ChemistryLab = () => {
   const [selectedScenario, setSelectedScenario] = useState<number | null>(null);
   const [selectedExperiment, setSelectedExperiment] = useState<number | null>(null);
+  const [isLoadingScenario, setIsLoadingScenario] = useState(false);
+  const [isLoadingExperiment, setIsLoadingExperiment] = useState(false);
+  const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
+  const [currentExperiment, setCurrentExperiment] = useState<Experiment | null>(null);
+
+  const generateNewScenario = async () => {
+    setIsLoadingScenario(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-chemistry-content', {
+        body: { type: 'scenario' }
+      });
+      
+      if (error) throw error;
+      setCurrentScenario(data);
+      toast.success("New scenario generated!");
+    } catch (error) {
+      console.error('Error generating scenario:', error);
+      toast.error("Failed to generate new scenario");
+    } finally {
+      setIsLoadingScenario(false);
+    }
+  };
+
+  const generateNewExperiment = async () => {
+    setIsLoadingExperiment(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-chemistry-content', {
+        body: { type: 'experiment' }
+      });
+      
+      if (error) throw error;
+      setCurrentExperiment(data);
+      toast.success("New experiment generated!");
+    } catch (error) {
+      console.error('Error generating experiment:', error);
+      toast.error("Failed to generate new experiment");
+    } finally {
+      setIsLoadingExperiment(false);
+    }
+  };
 
   const handleScenarioOption = (option: string) => {
     toast.success("Great choice! This response shows emotional intelligence and consideration.", {
@@ -91,101 +90,105 @@ const ChemistryLab = () => {
         <div className="grid gap-8">
           {/* Interactive Scenarios Section */}
           <section>
-            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-              <FlaskConical className="w-6 h-6 text-primary" />
-              Interactive Scenarios
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {scenarios.map((scenario) => (
-                <Card key={scenario.id} className="glass-card hover-card">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                      {scenario.title}
-                    </CardTitle>
-                    <CardDescription>{scenario.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {selectedScenario === scenario.id ? (
-                      <div className="space-y-2 animate-fade-in">
-                        {scenario.options.map((option, index) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            className="w-full text-left justify-start"
-                            onClick={() => handleScenarioOption(option)}
-                          >
-                            {option}
-                          </Button>
-                        ))}
-                      </div>
-                    ) : (
-                      <Button 
-                        onClick={() => setSelectedScenario(scenario.id)}
-                        className="w-full"
-                      >
-                        Explore Scenario
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold flex items-center gap-2">
+                <FlaskConical className="w-6 h-6 text-primary" />
+                Interactive Scenarios
+              </h2>
+              <Button
+                onClick={generateNewScenario}
+                disabled={isLoadingScenario}
+                variant="outline"
+              >
+                {isLoadingScenario ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                ) : (
+                  <>Generate New Scenario</>
+                )}
+              </Button>
             </div>
+            
+            {currentScenario && (
+              <Card className="glass-card hover-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    {currentScenario.title}
+                  </CardTitle>
+                  <CardDescription>{currentScenario.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2 animate-fade-in">
+                    {currentScenario.options.map((option, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="w-full text-left justify-start"
+                        onClick={() => handleScenarioOption(option)}
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </section>
 
           {/* Romantic Experiments Section */}
           <section>
-            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-              <Beaker className="w-6 h-6 text-primary" />
-              Romantic Experiments
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {experiments.map((experiment) => (
-                <Card key={experiment.id} className="glass-card hover-card">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Heart className="w-5 h-5 text-primary" />
-                      {experiment.title}
-                    </CardTitle>
-                    <CardDescription>{experiment.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold flex items-center gap-2">
+                <Beaker className="w-6 h-6 text-primary" />
+                Romantic Experiments
+              </h2>
+              <Button
+                onClick={generateNewExperiment}
+                disabled={isLoadingExperiment}
+                variant="outline"
+              >
+                {isLoadingExperiment ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                ) : (
+                  <>Generate New Experiment</>
+                )}
+              </Button>
+            </div>
+            
+            {currentExperiment && (
+              <Card className="glass-card hover-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-primary" />
+                    {currentExperiment.title}
+                  </CardTitle>
+                  <CardDescription>{currentExperiment.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg bg-white/10 space-y-2">
+                      <p className="text-sm text-spark-text-light">
+                        <strong>Duration:</strong> {currentExperiment.duration}
+                      </p>
                       <div className="text-sm text-spark-text-light">
-                        <p><strong>Duration:</strong> {experiment.duration}</p>
-                        <p><strong>Materials needed:</strong></p>
-                        <ul className="list-disc list-inside">
-                          {experiment.materials.map((material, index) => (
+                        <strong>Materials needed:</strong>
+                        <ul className="list-disc list-inside mt-2">
+                          {currentExperiment.materials.map((material, index) => (
                             <li key={index}>{material}</li>
                           ))}
                         </ul>
                       </div>
-                      {selectedExperiment === experiment.id ? (
-                        <div className="animate-fade-in space-y-2">
-                          <p className="text-sm text-spark-text-light">
-                            Experiment in progress! Follow the materials list and take your time to connect.
-                          </p>
-                          <Button 
-                            variant="outline"
-                            onClick={() => setSelectedExperiment(null)}
-                            className="w-full"
-                          >
-                            End Experiment
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button 
-                          onClick={() => handleStartExperiment(experiment.id)}
-                          className="w-full"
-                        >
-                          Start Experiment
-                        </Button>
-                      )}
+                      <Button 
+                        onClick={() => handleStartExperiment(1)}
+                        className="w-full mt-4"
+                      >
+                        Start Experiment
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </section>
         </div>
       </div>
