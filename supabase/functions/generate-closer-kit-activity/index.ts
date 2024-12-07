@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { ChatAnthropic } from "npm:@anthropic-ai/sdk";
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
+import { ChatAnthropic } from "npm:@anthropic-ai/sdk"
 
 const anthropic = new ChatAnthropic({
   apiKey: Deno.env.get('ANTHROPIC_API_KEY')!,
