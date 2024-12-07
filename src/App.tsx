@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import DateGenerator from "./pages/DateGenerator";
+import ChemistryLab from "./pages/ChemistryLab";
+import ConversationHub from "./pages/ConversationHub";
+import Progress from "./pages/Progress";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +22,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/date-generator" element={<DateGenerator />} />
+          <Route path="/chemistry-lab" element={<ChemistryLab />} />
+          <Route path="/conversation-hub" element={<ConversationHub />} />
+          <Route path="/progress" element={<Progress />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
