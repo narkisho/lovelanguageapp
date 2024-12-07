@@ -30,6 +30,33 @@ export type Database = {
         }
         Relationships: []
       }
+      progress: {
+        Row: {
+          activity_name: string
+          activity_type: string
+          completed_at: string | null
+          details: Json | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          activity_name: string
+          activity_type: string
+          completed_at?: string | null
+          details?: Json | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          activity_name?: string
+          activity_type?: string
+          completed_at?: string | null
+          details?: Json | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
