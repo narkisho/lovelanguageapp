@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { HeartHandshake } from "lucide-react";
+import { HeartHandshake, Loader2 } from "lucide-react";
 
 interface ValiaQuestionsProps {
   onComplete: () => void;
@@ -17,6 +17,7 @@ export function ValiaQuestions({ onComplete }: ValiaQuestionsProps) {
   const [niceToHaves, setNiceToHaves] = useState<string[]>([]);
   const [dealBreakers, setDealBreakers] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState("");
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   const sections = {
@@ -71,6 +72,7 @@ export function ValiaQuestions({ onComplete }: ValiaQuestionsProps) {
     else if (currentSection === 'niceToHaves') setCurrentSection('dealBreakers');
     else {
       // Save results
+      setSaving(true);
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("No user found");
@@ -97,6 +99,8 @@ export function ValiaQuestions({ onComplete }: ValiaQuestionsProps) {
           description: "Please try again later.",
           variant: "destructive",
         });
+      } finally {
+        setSaving(false);
       }
     }
   };
@@ -147,9 +151,16 @@ export function ValiaQuestions({ onComplete }: ValiaQuestionsProps) {
         <Button
           onClick={nextSection}
           className="w-full"
-          disabled={currentSectionData.values.length === 0}
+          disabled={currentSectionData.values.length === 0 || saving}
         >
-          {currentSection === 'dealBreakers' ? 'Complete Quiz' : 'Next Section'}
+          {saving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            currentSection === 'dealBreakers' ? 'Complete Quiz' : 'Next Section'
+          )}
         </Button>
       </CardContent>
     </Card>
