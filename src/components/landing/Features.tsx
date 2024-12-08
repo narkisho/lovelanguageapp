@@ -8,7 +8,6 @@ import {
   Target, 
   Scale, 
   Sparkles,
-  Trophy
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -16,7 +15,7 @@ const features = [
   {
     title: "30-Day Revival Program",
     description: "Embark on a personalized journey to rekindle your relationship",
-    icon: Trophy,
+    icon: Heart,
     color: "bg-spark-rose",
     animation: "hover:rotate-12",
   },
@@ -80,27 +79,27 @@ const features = [
 
 export function Features({ onFeatureClick }: { onFeatureClick: () => void }) {
   return (
-    <div className="container mx-auto px-4 py-16 md:py-24">
-      <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gradient">
+    <div className="container mx-auto px-4 py-8 md:py-16 lg:py-24">
+      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-16 text-gradient">
         Unlock New Relationship Powers
       </h2>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
         {features.map((feature, index) => (
           <Card 
             key={feature.title} 
-            className={`glass-card hover-card p-6 animate-fade-in cursor-pointer transform transition-all duration-300 ${feature.animation}`}
+            className={`glass-card hover-card p-4 md:p-6 animate-fade-in cursor-pointer transform transition-all duration-300 ${feature.animation}`}
             style={{ animationDelay: `${index * 100}ms` }}
             onClick={onFeatureClick}
           >
-            <div className="flex items-start gap-4">
-              <div className={`${feature.color} p-3 rounded-lg`}>
-                <feature.icon className="w-6 h-6 text-spark-text" />
+            <div className="flex items-start gap-3 md:gap-4">
+              <div className={`${feature.color} p-2 md:p-3 rounded-lg`}>
+                <feature.icon className="w-5 h-5 md:w-6 md:h-6 text-spark-text" />
               </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-spark-text">
+              <div className="space-y-1 md:space-y-2">
+                <h3 className="text-lg md:text-xl font-semibold text-spark-text">
                   {feature.title}
                 </h3>
-                <p className="text-spark-text-light">
+                <p className="text-sm md:text-base text-spark-text-light">
                   {feature.description}
                 </p>
               </div>
