@@ -12,25 +12,37 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PlusCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export function CreateTopicDialog({ onTopicCreated }: { onTopicCreated: () => void }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create a topic.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("community_topics")
-        .insert([
-          {
-            title,
-            description,
-          },
-        ]);
+        .insert({
+          title,
+          description,
+          user_id: user.id,
+          status: 'active',
+          is_admin_only: false,
+        });
 
       if (error) throw error;
 
@@ -61,7 +73,7 @@ export function CreateTopicDialog({ onTopicCreated }: { onTopicCreated: () => vo
           New Topic
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New Topic</DialogTitle>
         </DialogHeader>
